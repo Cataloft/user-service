@@ -13,32 +13,32 @@ type GetterUser interface {
 	GetUsers(filters []string, log *slog.Logger) (*[]model.User, error)
 }
 
-func Filter(userGetter GetterUser, log *slog.Logger) gin.HandlerFunc {
+func GetFiltered(userGetter GetterUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var filters []string
 
 		if paramAge := c.Query("age"); paramAge != "" {
-			paramFilter := c.Query("filter")
+			paramFilter := c.Query("filterAge")
 			filters = append(filters, utils.OperateStrings("age", paramAge, paramFilter))
 		}
 		if paramName := c.Query("name"); paramName != "" {
-			paramFilter := c.Query("filter")
+			paramFilter := c.Query("filterAge")
 			filters = append(filters, utils.OperateStrings("name", fmt.Sprintf("'%s'", paramName), paramFilter))
 		}
 		if paramSurname := c.Query("surname"); paramSurname != "" {
-			paramFilter := c.Query("filter")
+			paramFilter := c.Query("filterAge")
 			filters = append(filters, utils.OperateStrings("surname", fmt.Sprintf("'%s'", paramSurname), paramFilter))
 		}
 		if paramPatronymic := c.Query("patronymic"); paramPatronymic != "" {
-			paramFilter := c.Query("filter")
+			paramFilter := c.Query("filterAge")
 			filters = append(filters, utils.OperateStrings("patronymic", fmt.Sprintf("'%s'", paramPatronymic), paramFilter))
 		}
 		if paramGender := c.Query("gender"); paramGender != "" {
-			paramFilter := c.Query("filter")
+			paramFilter := c.Query("filterAge")
 			filters = append(filters, utils.OperateStrings("gender", fmt.Sprintf("'%s'", paramGender), paramFilter))
 		}
 		if paramNationality := c.Query("nationality"); paramNationality != "" {
-			paramFilter := c.Query("filter")
+			paramFilter := c.Query("filterAge")
 			filters = append(filters, utils.OperateStrings("nationality", fmt.Sprintf("'%s'", paramNationality), paramFilter))
 		}
 

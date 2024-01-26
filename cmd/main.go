@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 	"test-task/internal/config"
@@ -22,11 +21,11 @@ func main() {
 	srv := server.New(db, cfg, log)
 
 	err := srv.Start()
+
 	if err != nil {
-		log.Error(fmt.Sprintf("server crashed on addr: %s", cfg.ServerAddr))
+		log.Error("Server crashed", "error", err)
 		return
 	}
-
 }
 
 func setupLogger(env string) *slog.Logger {

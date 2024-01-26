@@ -38,7 +38,7 @@ func (s *Server) initHandlers() {
 	s.router.PATCH("/update/:id", user.Update(s.storage, s.logger))
 
 	s.router.Use(middlewares.PaginationMiddleware())
-	s.router.GET("/users", user.Filter(s.storage, s.logger))
+	s.router.GET("/users", user.GetFiltered(s.storage, s.logger))
 }
 
 func (s *Server) Start() error {

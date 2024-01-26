@@ -38,7 +38,7 @@ func Update(updater UpdaterUser, log *slog.Logger) gin.HandlerFunc {
 			log.Error("Error request data", "error", err)
 			return
 		}
-		log.Debug("Updating fields", "fields:", user)
+		log.Debug("Updating fields", "fields", user)
 
 		err = updater.UpdateUser(id, &user)
 		if err != nil {

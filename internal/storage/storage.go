@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 	"log/slog"
@@ -74,10 +73,11 @@ func (s *Storage) GetUsers(filters []string, log *slog.Logger) (*[]model.User, e
 			sqlGet = strings.Join([]string{sqlGet, filter}, " ")
 		}
 
-		log.Debug(fmt.Sprintf("sql request: %s", sqlGet))
+		log.Debug("Sql request: %s", "sql", sqlGet)
 
 		rows, err := s.Conn.Query(context.Background(), sqlGet)
 		if err != nil {
+			log.Error("Error querying db", "error", err)
 			return nil, err
 		}
 		defer rows.Close()
@@ -85,6 +85,7 @@ func (s *Storage) GetUsers(filters []string, log *slog.Logger) (*[]model.User, e
 		for rows.Next() {
 			err = rows.Scan(&u.ID, &u.Name, &u.Surname, &u.Patronymic, &u.Gender, &u.Age, &u.Nationality)
 			if err != nil {
+				log.Error("Error scanning row", "error", err)
 				return nil, err
 			}
 			users = append(users, u)
