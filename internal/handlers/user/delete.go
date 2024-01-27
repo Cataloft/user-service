@@ -1,10 +1,11 @@
 package user
 
 import (
-	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type DeleterUser interface {
@@ -15,6 +16,7 @@ func Delete(deleter DeleterUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		paramKey := c.Param("id")
 		id, err := strconv.Atoi(paramKey)
+
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error parsing param", "error": err})
 			log.Error("Error parsing param", "error", err)

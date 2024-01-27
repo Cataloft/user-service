@@ -1,13 +1,14 @@
 package server
 
 import (
+	"log/slog"
+
 	"github.com/Cataloft/user-service/internal/config"
 	"github.com/Cataloft/user-service/internal/handlers/user"
 	"github.com/Cataloft/user-service/internal/middlewares"
 	"github.com/Cataloft/user-service/internal/storage"
 	"github.com/gin-gonic/gin"
 	requestid "github.com/sumit-tembe/gin-requestid"
-	"log/slog"
 )
 
 type Server struct {
@@ -33,14 +34,12 @@ func New(db *storage.Storage, cfg *config.Config, logger *slog.Logger) *Server {
 }
 
 func (s *Server) initHandlers() {
-
 	s.router.Use(middlewares.PaginationMiddleware())
 	s.router.POST("/users", user.EnrichFIO(s.storage, s.logger))
-	s.router.GET("/users", user.GetFiltered(s.storage, s.logger))
+	s.router.GET("/users", user.GetList(s.storage, s.logger))
 
 	s.router.DELETE("/delete/:id", user.Delete(s.storage, s.logger))
 	s.router.PATCH("/update/:id", user.Update(s.storage, s.logger))
-
 }
 
 func (s *Server) Start() error {

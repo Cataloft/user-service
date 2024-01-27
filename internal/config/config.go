@@ -1,15 +1,16 @@
 package config
 
 import (
-	"github.com/ilyakaznacheev/cleanenv"
 	"log"
 	"os"
+
+	"github.com/ilyakaznacheev/cleanenv"
 )
 
 type Config struct {
 	Env         string `env:"ENV"`
 	ServerAddr  string `env:"SERVER_ADDR"`
-	DatabaseUrl string `env:"DATABASE_URL"`
+	DatabaseURL string `env:"DATABASE_URL"`
 }
 
 func MustLoad() *Config {

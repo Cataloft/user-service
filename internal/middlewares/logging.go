@@ -2,12 +2,13 @@ package middlewares
 
 import (
 	"fmt"
-	"github.com/Cataloft/user-service/internal/utils"
-	"github.com/gin-gonic/gin"
-	requestid "github.com/sumit-tembe/gin-requestid"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/Cataloft/user-service/internal/utils"
+	"github.com/gin-gonic/gin"
+	requestid "github.com/sumit-tembe/gin-requestid"
 )
 
 func LogMiddleware(log *slog.Logger) gin.HandlerFunc {

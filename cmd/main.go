@@ -1,11 +1,12 @@
 package main
 
 import (
+	"log/slog"
+	"os"
+
 	"github.com/Cataloft/user-service/internal/config"
 	"github.com/Cataloft/user-service/internal/server"
 	"github.com/Cataloft/user-service/internal/storage"
-	"log/slog"
-	"os"
 )
 
 const (
@@ -17,13 +18,14 @@ func main() {
 	cfg := config.MustLoad()
 	log := setupLogger(cfg.Env)
 
-	db := storage.New(cfg.DatabaseUrl)
+	db := storage.New(cfg.DatabaseURL)
 	srv := server.New(db, cfg, log)
 
 	err := srv.Start()
 
 	if err != nil {
 		log.Error("Server crashed", "error", err)
+
 		return
 	}
 }

@@ -2,12 +2,12 @@ package storage
 
 import (
 	"database/sql"
-	"github.com/pressly/goose"
 	"log"
+
+	"github.com/pressly/goose"
 )
 
 func UpMigrations(db *sql.DB) {
-
 	if err := goose.SetDialect("postgres"); err != nil {
 		log.Fatal(err)
 	}
