@@ -73,13 +73,14 @@ func (s *Storage) UpdateUser(id int, user *model.User) error {
 	if err != nil {
 		return err
 	}
-
 	if !exists {
 		log.Printf("User with id=%d is not exist", id)
 		return nil
 	}
 
-	queryUpdate, args := utils.ProcessUserFields(id, user)
+	queryUpdate := "UPDATE users SET"
+	tail, args := utils.ProcessUserFields(id, user)
+	queryUpdate += tail
 	_, err = s.Conn.Exec(context.Background(), queryUpdate, args...)
 	if err != nil {
 		return err

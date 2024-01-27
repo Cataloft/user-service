@@ -17,29 +17,32 @@ func GetFiltered(userGetter GetterUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var filters []string
 
+		if paramFilter := c.Query("ageGreater"); paramFilter != "" {
+			filters = append(filters, utils.OperateStrings("age", paramFilter, "greater"))
+		}
+		if paramFilter := c.Query("ageLower"); paramFilter != "" {
+			filters = append(filters, utils.OperateStrings("age", paramFilter, "lower"))
+		}
+		if paramFilter := c.Query("nameContain"); paramFilter != "" {
+			filters = append(filters, utils.OperateStrings("name", paramFilter, "like"))
+		}
 		if paramAge := c.Query("age"); paramAge != "" {
-			paramFilter := c.Query("filterAge")
-			filters = append(filters, utils.OperateStrings("age", paramAge, paramFilter))
+			filters = append(filters, utils.OperateStrings("age", paramAge, "equal"))
 		}
 		if paramName := c.Query("name"); paramName != "" {
-			paramFilter := c.Query("filterAge")
-			filters = append(filters, utils.OperateStrings("name", fmt.Sprintf("'%s'", paramName), paramFilter))
+			filters = append(filters, utils.OperateStrings("name", fmt.Sprintf("'%s'", paramName), "equal"))
 		}
 		if paramSurname := c.Query("surname"); paramSurname != "" {
-			paramFilter := c.Query("filterAge")
-			filters = append(filters, utils.OperateStrings("surname", fmt.Sprintf("'%s'", paramSurname), paramFilter))
+			filters = append(filters, utils.OperateStrings("surname", fmt.Sprintf("'%s'", paramSurname), "equal"))
 		}
 		if paramPatronymic := c.Query("patronymic"); paramPatronymic != "" {
-			paramFilter := c.Query("filterAge")
-			filters = append(filters, utils.OperateStrings("patronymic", fmt.Sprintf("'%s'", paramPatronymic), paramFilter))
+			filters = append(filters, utils.OperateStrings("patronymic", fmt.Sprintf("'%s'", paramPatronymic), "equal"))
 		}
 		if paramGender := c.Query("gender"); paramGender != "" {
-			paramFilter := c.Query("filterAge")
-			filters = append(filters, utils.OperateStrings("gender", fmt.Sprintf("'%s'", paramGender), paramFilter))
+			filters = append(filters, utils.OperateStrings("gender", fmt.Sprintf("'%s'", paramGender), "equal"))
 		}
 		if paramNationality := c.Query("nationality"); paramNationality != "" {
-			paramFilter := c.Query("filterAge")
-			filters = append(filters, utils.OperateStrings("nationality", fmt.Sprintf("'%s'", paramNationality), paramFilter))
+			filters = append(filters, utils.OperateStrings("nationality", fmt.Sprintf("'%s'", paramNationality), "equal"))
 		}
 
 		log.Debug("Getting filters", "filters", filters)
