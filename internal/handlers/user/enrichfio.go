@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/Cataloft/user-service/internal/handlers/enrich"
+	"github.com/Cataloft/user-service/internal/apis"
 	"github.com/Cataloft/user-service/internal/model"
 	"github.com/gin-gonic/gin"
 	"log/slog"
@@ -37,18 +37,18 @@ func EnrichFIO(saver SaverUser, log *slog.Logger) gin.HandlerFunc {
 
 		wg := sync.WaitGroup{}
 		wg.Add(3)
-		go func(c *gin.Context) {
+		go func(c *gin.Context, log *slog.Logger) {
 			defer wg.Done()
-			user.Age = enrich.EnrichAge(c, user.Name)
-		}(c)
-		go func(c *gin.Context) {
+			user.Age = apis.EnrichAge(c, user.Name, log)
+		}(c, log)
+		go func(c *gin.Context, log *slog.Logger) {
 			defer wg.Done()
-			user.Gender = enrich.EnrichGender(c, user.Name)
-		}(c)
-		go func(c *gin.Context) {
+			user.Gender = apis.EnrichGender(c, user.Name, log)
+		}(c, log)
+		go func(c *gin.Context, log *slog.Logger) {
 			defer wg.Done()
-			user.Nationality = enrich.EnrichNationality(c, user.Name)
-		}(c)
+			user.Nationality = apis.EnrichNationality(c, user.Name, log)
+		}(c, log)
 		wg.Wait()
 
 		log.Debug("User data enriched", "enriched user", user)
