@@ -2,6 +2,7 @@ version: '3'
 
 services:
   users_service:
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,8 +21,6 @@ services:
       POSTGRES_PASSWORD: secret
     ports:
       - "5454:5432"
-#    volumes:
-#      - ./internal/storage/migrations/:/migrations
     networks:
       - postgres
 

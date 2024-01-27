@@ -2,7 +2,7 @@ package utils
 
 import (
 	"fmt"
-	"test-task/internal/model"
+	"github.com/Cataloft/user-service/internal/model"
 )
 
 func ProcessUserFields(id int, u *model.User) (string, []any) {

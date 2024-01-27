@@ -1,21 +1,12 @@
 package user
 
 import (
+	"github.com/Cataloft/user-service/internal/model"
 	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
 	"strconv"
-	"test-task/internal/model"
 )
-
-//type UpdateRequest struct {
-//	Name        string `json:"name"`
-//	Surname     string `json:"surname"`
-//	Patronymic  string `json:"patronymic"`
-//	Gender      string `json:"gender"`
-//	Age         int    `json:"age"`
-//	Nationality string `json:"nationality"`
-//}
 
 type UpdaterUser interface {
 	UpdateUser(id int, user *model.User) error
@@ -47,7 +38,7 @@ func Update(updater UpdaterUser, log *slog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, id)
+		c.JSON(http.StatusOK, gin.H{"id": id})
 		log.Info("User successfully updated")
 	}
 }

@@ -2,10 +2,11 @@ package middlewares
 
 import (
 	"fmt"
+	"github.com/Cataloft/user-service/internal/utils"
 	"github.com/gin-gonic/gin"
 	requestid "github.com/sumit-tembe/gin-requestid"
 	"log/slog"
-	"test-task/internal/utils"
+	"net/http"
 	"time"
 )
 
@@ -25,7 +26,7 @@ func LogMiddleware(log *slog.Logger) gin.HandlerFunc {
 			"request_id", requestid.GetRequestIDFromHeaders(c),
 		)
 
-		if c.Writer.Status() >= 500 {
+		if c.Writer.Status() >= http.StatusInternalServerError {
 			entry.Error(c.Errors.String())
 		} else {
 			entry.Info("Success")

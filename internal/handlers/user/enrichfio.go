@@ -1,12 +1,12 @@
 package user
 
 import (
+	"github.com/Cataloft/user-service/internal/handlers/enrich"
+	"github.com/Cataloft/user-service/internal/model"
 	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
 	"sync"
-	"test-task/internal/handlers/enrich"
-	"test-task/internal/model"
 )
 
 type Request struct {
@@ -61,7 +61,7 @@ func EnrichFIO(saver SaverUser, log *slog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusCreated, user.ID)
+		c.JSON(http.StatusCreated, gin.H{"created": user})
 		log.Info("User successfully created")
 	}
 }

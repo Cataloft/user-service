@@ -2,11 +2,11 @@ package user
 
 import (
 	"fmt"
+	"github.com/Cataloft/user-service/internal/model"
+	"github.com/Cataloft/user-service/internal/utils"
 	"github.com/gin-gonic/gin"
 	"log/slog"
 	"net/http"
-	"test-task/internal/model"
-	"test-task/internal/utils"
 )
 
 type GetterUser interface {

@@ -1,4 +1,4 @@
-module test-task
+module github.com/Cataloft/user-service
 
 go 1.21
 

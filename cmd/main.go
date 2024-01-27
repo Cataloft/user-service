@@ -1,11 +1,11 @@
 package main
 
 import (
+	"github.com/Cataloft/user-service/internal/config"
+	"github.com/Cataloft/user-service/internal/server"
+	"github.com/Cataloft/user-service/internal/storage"
 	"log/slog"
 	"os"
-	"test-task/internal/config"
-	"test-task/internal/server"
-	"test-task/internal/storage"
 )
 
 const (

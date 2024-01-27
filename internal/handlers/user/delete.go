@@ -30,7 +30,7 @@ func Delete(deleter DeleterUser, log *slog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, id)
+		c.JSON(http.StatusOK, gin.H{"id": id})
 		log.Info("User successfully deleted")
 	}
 }

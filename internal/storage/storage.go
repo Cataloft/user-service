@@ -2,13 +2,14 @@ package storage
 
 import (
 	"context"
+	"github.com/Cataloft/user-service/internal/model"
+	"github.com/Cataloft/user-service/internal/utils"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jackc/pgx/v5/stdlib"
 	"log"
 	"log/slog"
 	"strings"
-	"test-task/internal/model"
-	"test-task/internal/utils"
+	"time"
 )
 
 type Storage struct {
@@ -21,9 +22,14 @@ func New(dbUrl string) *Storage {
 		log.Fatalf("Error: parse db url")
 	}
 
-	connPool, err := pgxpool.NewWithConfig(context.Background(), poolCfg)
-	if err != nil {
-		log.Fatalf("Error: connect to db")
+	var connPool *pgxpool.Pool
+	for {
+		connPool, err = pgxpool.NewWithConfig(context.Background(), poolCfg)
+		if connPool.Ping(context.Background()) == nil {
+			log.Println("postgres upped")
+			break
+		}
+		time.Sleep(1 * time.Second)
 	}
 
 	sqlDb := stdlib.OpenDBFromPool(connPool)
@@ -33,8 +39,8 @@ func New(dbUrl string) *Storage {
 }
 
 func (s *Storage) SaveUser(u *model.User) error {
-	sqlCreate := "INSERT INTO public.users (name, surname, patronymic, gender, age, nationality) VALUES ($1, $2, $3, $4, $5, $6)"
-	_, err := s.Conn.Exec(context.Background(), sqlCreate, u.Name, u.Surname, u.Patronymic, u.Gender, u.Age, u.Nationality)
+	queryCreate := "INSERT INTO public.users (name, surname, patronymic, gender, age, nationality) VALUES ($1, $2, $3, $4, $5, $6)"
+	_, err := s.Conn.Exec(context.Background(), queryCreate, u.Name, u.Surname, u.Patronymic, u.Gender, u.Age, u.Nationality)
 	if err != nil {
 		return err
 	}
@@ -43,8 +49,18 @@ func (s *Storage) SaveUser(u *model.User) error {
 }
 
 func (s *Storage) DeleteUser(id int) error {
-	sqlDelete := "DELETE FROM users where id = $1"
-	_, err := s.Conn.Exec(context.Background(), sqlDelete, id)
+	exists, err := s.ExistsById(id)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		log.Printf("User with id=%d is not exist", id)
+		return nil
+	}
+
+	queryDelete := "DELETE FROM users where id = $1"
+	_, err = s.Conn.Exec(context.Background(), queryDelete, id)
 	if err != nil {
 		return err
 	}
@@ -53,9 +69,18 @@ func (s *Storage) DeleteUser(id int) error {
 }
 
 func (s *Storage) UpdateUser(id int, user *model.User) error {
-	sqlUpdate, args := utils.ProcessUserFields(id, user)
+	exists, err := s.ExistsById(id)
+	if err != nil {
+		return err
+	}
 
-	_, err := s.Conn.Exec(context.Background(), sqlUpdate, args...)
+	if !exists {
+		log.Printf("User with id=%d is not exist", id)
+		return nil
+	}
+
+	queryUpdate, args := utils.ProcessUserFields(id, user)
+	_, err = s.Conn.Exec(context.Background(), queryUpdate, args...)
 	if err != nil {
 		return err
 	}
@@ -66,20 +91,20 @@ func (s *Storage) UpdateUser(id int, user *model.User) error {
 func (s *Storage) GetUsers(filters []string, log *slog.Logger) (*[]model.User, error) {
 	var users []model.User
 	var u model.User
-	sqlGet := "SELECT * FROM users"
+	queryGet := "SELECT * FROM users"
 
 	if len(filters) != 0 {
-		sqlGet = strings.Join([]string{sqlGet, "WHERE"}, " ")
+		queryGet = strings.Join([]string{queryGet, "WHERE"}, " ")
 		for i, filter := range filters {
 			if i > 0 {
-				sqlGet = strings.Join([]string{sqlGet, "AND"}, " ")
+				queryGet = strings.Join([]string{queryGet, "AND"}, " ")
 			}
-			sqlGet = strings.Join([]string{sqlGet, filter}, " ")
+			queryGet = strings.Join([]string{queryGet, filter}, " ")
 		}
 
-		log.Debug("Sql request: %s", "sql", sqlGet)
+		log.Debug("Sql request: %s", "sql", queryGet)
 
-		rows, err := s.Conn.Query(context.Background(), sqlGet)
+		rows, err := s.Conn.Query(context.Background(), queryGet)
 		if err != nil {
 			log.Error("Error querying db", "error", err)
 			return nil, err
@@ -98,7 +123,7 @@ func (s *Storage) GetUsers(filters []string, log *slog.Logger) (*[]model.User, e
 		return &users, nil
 	}
 
-	rows, err := s.Conn.Query(context.Background(), sqlGet)
+	rows, err := s.Conn.Query(context.Background(), queryGet)
 	if err != nil {
 		return nil, err
 	}
@@ -113,4 +138,16 @@ func (s *Storage) GetUsers(filters []string, log *slog.Logger) (*[]model.User, e
 	}
 
 	return &users, nil
+}
+
+func (s *Storage) ExistsById(id int) (bool, error) {
+	queryExist := "SELECT EXISTS(SELECT * FROM users WHERE id = $1)"
+	var exists bool
+
+	row := s.Conn.QueryRow(context.Background(), queryExist, id)
+	if err := row.Scan(&exists); err != nil {
+		return false, err
+	}
+
+	return exists, nil
 }

@@ -8,8 +8,6 @@ import (
 
 func UpMigrations(db *sql.DB) {
 
-	migration := goose.
-
 	if err := goose.SetDialect("postgres"); err != nil {
 		log.Fatal(err)
 	}
