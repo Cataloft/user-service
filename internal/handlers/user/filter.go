@@ -4,9 +4,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/Cataloft/user-service/internal/utils"
-
 	"github.com/Cataloft/user-service/internal/model"
+	"github.com/Cataloft/user-service/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
