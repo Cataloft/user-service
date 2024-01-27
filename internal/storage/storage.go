@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/stdlib"
 	"log"
 	"log/slog"
 	"strings"
@@ -17,13 +18,16 @@ type Storage struct {
 func New(dbUrl string) *Storage {
 	poolCfg, err := pgxpool.ParseConfig(dbUrl)
 	if err != nil {
-		log.Fatalln("ERROR: parse db url")
+		log.Fatalf("Error: parse db url")
 	}
 
 	connPool, err := pgxpool.NewWithConfig(context.Background(), poolCfg)
 	if err != nil {
-		log.Fatalln("ERROR: connect to db ")
+		log.Fatalf("Error: connect to db")
 	}
+
+	sqlDb := stdlib.OpenDBFromPool(connPool)
+	UpMigrations(sqlDb)
 
 	return &Storage{Conn: connPool}
 }

@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  users_service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "12345:12345"
+    depends_on:
+      - db
+    networks:
+      - postgres
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: users_db
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+    ports:
+      - "5454:5432"
+#    volumes:
+#      - ./internal/storage/migrations/:/migrations
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
