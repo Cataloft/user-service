@@ -97,10 +97,10 @@ func (s *Storage) UpdateUser(id int, user *model.User) (string, error) {
 	}
 
 	queryUpdate := "UPDATE users SET"
-	s.logger.Debug("Update query", "query", queryUpdate)
-
 	tail, args := utils.ProcessUserFields(id, user)
 	queryUpdate += tail
+	s.logger.Debug("Update query", "query", queryUpdate)
+
 	_, err = s.Conn.Exec(context.Background(), queryUpdate, args...)
 
 	if err != nil {

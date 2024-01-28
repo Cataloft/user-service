@@ -6,61 +6,33 @@ import (
 	"github.com/Cataloft/user-service/internal/model"
 )
 
+func addCondition(tail string, argIndex int, field string, value any, args []any) (string, int, []any) {
+	if value != "" && value != 0 {
+		tail += fmt.Sprintf(" %s=$%d,", field, argIndex)
+
+		args = append(args, value)
+
+		argIndex++
+	}
+
+	return tail, argIndex, args
+}
+
 func ProcessUserFields(id int, u *model.User) (tail string, args []any) {
 	tail = ""
 	argIndex := 1
+	tail, argIndex, args = addCondition(tail, argIndex, "name", u.Name, args)
+	tail, argIndex, args = addCondition(tail, argIndex, "surname", u.Surname, args)
+	tail, argIndex, args = addCondition(tail, argIndex, "patronymic", u.Patronymic, args)
+	tail, argIndex, args = addCondition(tail, argIndex, "gender", u.Gender, args)
+	tail, argIndex, args = addCondition(tail, argIndex, "age", u.Age, args)
+	tail, argIndex, args = addCondition(tail, argIndex, "nationality", u.Nationality, args)
 
-	if u.Name != "" {
-		tail += fmt.Sprintf(" name=$%d, ", argIndex)
+	if len(tail) > 0 {
+		tail = tail[:len(tail)-1] + fmt.Sprintf(" WHERE id=$%d", argIndex)
 
-		args = append(args, u.Name)
-
-		argIndex++
+		args = append(args, id)
 	}
-
-	if u.Surname != "" {
-		tail += fmt.Sprintf(" surname=$%d,", argIndex)
-
-		args = append(args, u.Surname)
-
-		argIndex++
-	}
-
-	if u.Patronymic != "" {
-		tail += fmt.Sprintf(" patronymic=$%d,", argIndex)
-
-		args = append(args, u.Patronymic)
-
-		argIndex++
-	}
-
-	if u.Gender != "" {
-		tail += fmt.Sprintf(" gender=$%d,", argIndex)
-
-		args = append(args, u.Gender)
-
-		argIndex++
-	}
-
-	if u.Age != 0 {
-		tail += fmt.Sprintf(" age=$%d,", argIndex)
-
-		args = append(args, u.Age)
-
-		argIndex++
-	}
-
-	if u.Nationality != "" {
-		tail += fmt.Sprintf(" nationality=$%d,", argIndex)
-
-		args = append(args, u.Nationality)
-
-		argIndex++
-	}
-
-	args = append(args, id)
-
-	tail = tail[:len(tail)-1] + fmt.Sprintf(" WHERE id=$%d", argIndex)
 
 	return tail, args
 }
