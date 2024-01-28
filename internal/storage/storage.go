@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/Cataloft/user-service/internal/config"
-
 	"github.com/Cataloft/user-service/internal/model"
 	"github.com/Cataloft/user-service/internal/utils"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -86,7 +85,6 @@ func (s *Storage) DeleteUser(id int) (string, error) {
 
 func (s *Storage) UpdateUser(id int, user *model.User) (string, error) {
 	exists, err := s.ExistsByID(id)
-
 	if err != nil {
 		return "", err
 	}
@@ -117,7 +115,6 @@ func (s *Storage) GetUsers(filters []string) ([]model.User, error) {
 	var u model.User
 
 	queryGet := "SELECT * FROM users"
-
 	if len(filters) != 0 {
 		queryGet = queryGet + " " + "WHERE"
 
@@ -132,7 +129,6 @@ func (s *Storage) GetUsers(filters []string) ([]model.User, error) {
 		s.logger.Debug("Get query", "query", queryGet)
 
 		rows, err := s.Conn.Query(context.Background(), queryGet)
-
 		if err != nil {
 			s.logger.Error("Error querying db", "error", err)
 

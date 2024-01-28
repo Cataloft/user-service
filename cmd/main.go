@@ -22,7 +22,6 @@ func main() {
 	srv := server.New(db, cfg, log)
 
 	err := srv.Start()
-
 	if err != nil {
 		log.Error("Server crashed", "error", err)
 

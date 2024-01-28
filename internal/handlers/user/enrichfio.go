@@ -25,8 +25,8 @@ type SaverUser interface {
 func EnrichFIO(saver SaverUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req Request
-		err := c.ShouldBindJSON(&req)
 
+		err := c.ShouldBindJSON(&req)
 		if err != nil {
 			c.String(http.StatusBadRequest, err.Error())
 			log.Error("Error requested data", "error", err)

@@ -16,8 +16,8 @@ type UpdaterUser interface {
 func Update(updater UpdaterUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		paramKey := c.Param("id")
-		id, err := strconv.Atoi(paramKey)
 
+		id, err := strconv.Atoi(paramKey)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error parsing param", "error": err})
 			log.Error("Error parsing param", "error", err)

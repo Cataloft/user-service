@@ -18,7 +18,6 @@ func (e *Enricher) EnrichGender(c *gin.Context, name string) string {
 	url := apiURL + name
 
 	resp, err := http.Get(url)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error executing request", "error": err})
 		e.logger.Error("Error executing request", "error", err)

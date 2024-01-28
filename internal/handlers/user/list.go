@@ -28,7 +28,6 @@ func GetList(userGetter GetterUser, log *slog.Logger) gin.HandlerFunc {
 		log.Debug("Getting filters", "filters", filters)
 
 		filteredUsers, err := userGetter.GetUsers(filters)
-
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting data from server", "error": err})
 			log.Error("Error getting data from server", "error", err)
