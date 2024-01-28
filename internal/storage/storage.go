@@ -48,6 +48,7 @@ func New(cfg config.Database, logger *slog.Logger) *Storage {
 
 func (s *Storage) SaveUser(u *model.User) error {
 	queryCreate := "INSERT INTO public.users (name, surname, patronymic, gender, age, nationality) VALUES ($1, $2, $3, $4, $5, $6)"
+
 	s.logger.Debug("Create query", "query", queryCreate)
 
 	_, err := s.Conn.Exec(context.Background(),
