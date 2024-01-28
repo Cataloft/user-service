@@ -3,6 +3,8 @@ package main
 import (
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/Cataloft/user-service/internal/config"
 	"github.com/Cataloft/user-service/internal/server"
@@ -21,12 +23,15 @@ func main() {
 	db := storage.New(cfg.Database, log)
 	srv := server.New(db, cfg, log)
 
-	err := srv.Start()
-	if err != nil {
-		log.Error("Server crashed", "error", err)
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
-		return
-	}
+	go func() {
+		if err := srv.Start(); err != nil {
+			log.Error("Failed to start server", "error", err)
+		}
+	}()
+	<-done
 }
 
 func setupLogger(env string) *slog.Logger {

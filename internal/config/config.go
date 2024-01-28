@@ -15,9 +15,9 @@ type Config struct {
 }
 
 type Database struct {
-	DatabaseURL      string        `env:"DATABASE_URL"`
-	MaxAttempts      int           `env:"MAX_ATTEMPTS"`
-	DurationAttempts time.Duration `env:"DURATION_ATTEMPTS"`
+	DatabaseURL     string        `env:"DATABASE_URL"`
+	MaxAttempts     int           `env:"MAX_ATTEMPTS"`
+	AttemptDuration time.Duration `env:"ATTEMPT_DURATION"`
 }
 
 func MustLoad() *Config {

@@ -14,6 +14,7 @@ type DeleterUser interface {
 
 func Delete(deleter DeleterUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log = log.With(slog.String("op", "handlers.user.Delete"))
 		paramKey := c.Param("id")
 
 		id, err := strconv.Atoi(paramKey)

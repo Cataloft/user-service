@@ -15,6 +15,7 @@ type GetterUser interface {
 
 func GetList(userGetter GetterUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log = log.With(slog.String("op", "handlers.user.GetList"))
 		params := []string{"ageGreater", "ageLower", "nameContain", "age", "name", "surname", "patronymic", "gender", "nationality"}
 
 		var filters []string

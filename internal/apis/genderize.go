@@ -27,8 +27,8 @@ func (e *Enricher) EnrichGender(c *gin.Context, name string) string {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		c.JSON(resp.StatusCode, gin.H{"message": "Error getting data", "error": err})
-		e.logger.Error("Error getting data", "error", err)
+		c.JSON(resp.StatusCode, gin.H{"message": "Error getting data", "apiURL": apiURL})
+		e.logger.Error("Error getting data", "apiURL", apiURL)
 
 		return ""
 	}

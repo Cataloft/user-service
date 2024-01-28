@@ -27,14 +27,13 @@ func (e *Enricher) EnrichAge(c *gin.Context, name string) int {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		c.JSON(resp.StatusCode, gin.H{"message": "Error getting data", "error": err})
-		e.logger.Error("Error getting data", "error", err)
+		c.JSON(resp.StatusCode, gin.H{"message": "Error getting data", "apiURL": apiURL})
+		e.logger.Error("Error getting data", "apiURL", apiURL)
 
 		return -1
 	}
 
 	err = json.NewDecoder(resp.Body).Decode(&age)
-
 	if err != nil {
 		c.JSON(resp.StatusCode, gin.H{"message": "Error decoding data", "error": err})
 		e.logger.Error("Error decoding data", "error", err)

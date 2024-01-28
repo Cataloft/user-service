@@ -24,6 +24,8 @@ type SaverUser interface {
 
 func EnrichFIO(saver SaverUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log = log.With(slog.String("op", "handlers.user.EnrichFIO"))
+
 		var req Request
 
 		err := c.ShouldBindJSON(&req)
@@ -62,10 +64,15 @@ func EnrichFIO(saver SaverUser, log *slog.Logger) gin.HandlerFunc {
 		}()
 		wg.Wait()
 
+		if user.Age == -1 || user.Gender == "" || user.Nationality == "" {
+			log.Error("Error getting data from apis")
+
+			return
+		}
+
 		log.Debug("User data enriched", "enriched user", user)
 
 		err = saver.SaveUser(&user)
-
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error saving user", "error": err})
 			log.Error("Error saving user", "error", err)

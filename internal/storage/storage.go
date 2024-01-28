@@ -34,7 +34,7 @@ func New(cfg config.Database, logger *slog.Logger) *Storage {
 			break
 		}
 
-		time.Sleep(cfg.DurationAttempts)
+		time.Sleep(cfg.AttemptDuration)
 	}
 
 	sqlDB := stdlib.OpenDBFromPool(connPool)

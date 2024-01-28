@@ -15,6 +15,7 @@ type UpdaterUser interface {
 
 func Update(updater UpdaterUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		log = log.With(slog.String("op", "handlers.user.Update"))
 		paramKey := c.Param("id")
 
 		id, err := strconv.Atoi(paramKey)

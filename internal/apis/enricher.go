@@ -7,5 +7,7 @@ type Enricher struct {
 }
 
 func New(logger *slog.Logger) *Enricher {
-	return &Enricher{logger: logger}
+	return &Enricher{
+		logger: logger,
+	}
 }
