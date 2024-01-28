@@ -2,20 +2,19 @@ package apis
 
 import (
 	"encoding/json"
-	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func EnrichNationality(c *gin.Context, name string, log *slog.Logger) string {
-	type NationalityResp struct {
-		Country []struct {
-			CountryID   string  `json:"country_id"`
-			Probability float64 `json:"probability"`
-		} `json:"country"`
-	}
+type NationalityResp struct {
+	Country []struct {
+		CountryID   string  `json:"country_id"`
+		Probability float64 `json:"probability"`
+	} `json:"country"`
+}
 
+func (e *Enricher) EnrichNationality(c *gin.Context, name string) string {
 	var nationality NationalityResp
 
 	apiURL := "https://api.nationalize.io/?name="
@@ -25,7 +24,7 @@ func EnrichNationality(c *gin.Context, name string, log *slog.Logger) string {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error executing request", "error": err})
-		log.Error("Error executing request", "error", err)
+		e.logger.Error("Error executing request", "error", err)
 
 		return ""
 	}
@@ -34,7 +33,7 @@ func EnrichNationality(c *gin.Context, name string, log *slog.Logger) string {
 
 	if resp.StatusCode != http.StatusOK {
 		c.JSON(resp.StatusCode, gin.H{"message": "Error getting data", "error": err})
-		log.Error("Error getting data", "error", err)
+		e.logger.Error("Error getting data", "error", err)
 
 		return ""
 	}
@@ -43,7 +42,7 @@ func EnrichNationality(c *gin.Context, name string, log *slog.Logger) string {
 
 	if err != nil {
 		c.JSON(resp.StatusCode, gin.H{"message": "Error decoding data", "error": err})
-		log.Error("Error decoding data", "error", err)
+		e.logger.Error("Error decoding data", "error", err)
 
 		return ""
 	}
@@ -58,7 +57,7 @@ func EnrichNationality(c *gin.Context, name string, log *slog.Logger) string {
 		}
 	}
 
-	log.Debug("Got nationality", "nationality", maxNationality)
+	e.logger.Debug("Got nationality", "nationality", maxNationality)
 
 	return maxNationality
 }

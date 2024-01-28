@@ -10,7 +10,7 @@ import (
 )
 
 type UpdaterUser interface {
-	UpdateUser(id int, user *model.User) error
+	UpdateUser(id int, user *model.User) (string, error)
 }
 
 func Update(updater UpdaterUser, log *slog.Logger) gin.HandlerFunc {
@@ -37,11 +37,17 @@ func Update(updater UpdaterUser, log *slog.Logger) gin.HandlerFunc {
 
 		log.Debug("Updating fields", "fields", user)
 
-		err = updater.UpdateUser(id, &user)
-
+		exist, err := updater.UpdateUser(id, &user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error updating data", "error": err})
 			log.Error("Error updating data", "error", err)
+
+			return
+		}
+
+		if exist != "" {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "User is not exist", "id": id})
+			log.Info("User is not exist", "id", id)
 
 			return
 		}

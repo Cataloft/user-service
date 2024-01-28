@@ -2,17 +2,16 @@ package apis
 
 import (
 	"encoding/json"
-	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func EnrichGender(c *gin.Context, name string, log *slog.Logger) string {
-	type GenderResp struct {
-		Gender string `json:"gender"`
-	}
+type GenderResp struct {
+	Gender string `json:"gender"`
+}
 
+func (e *Enricher) EnrichGender(c *gin.Context, name string) string {
 	var gender GenderResp
 
 	apiURL := "https://api.genderize.io/?name="
@@ -22,7 +21,7 @@ func EnrichGender(c *gin.Context, name string, log *slog.Logger) string {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error executing request", "error": err})
-		log.Error("Error executing request", "error", err)
+		e.logger.Error("Error executing request", "error", err)
 
 		return ""
 	}
@@ -30,7 +29,7 @@ func EnrichGender(c *gin.Context, name string, log *slog.Logger) string {
 
 	if resp.StatusCode != http.StatusOK {
 		c.JSON(resp.StatusCode, gin.H{"message": "Error getting data", "error": err})
-		log.Error("Error getting data", "error", err)
+		e.logger.Error("Error getting data", "error", err)
 
 		return ""
 	}
@@ -39,12 +38,12 @@ func EnrichGender(c *gin.Context, name string, log *slog.Logger) string {
 
 	if err != nil {
 		c.JSON(resp.StatusCode, gin.H{"message": "Error decoding data", "error": err})
-		log.Error("Error decoding data", "error", err)
+		e.logger.Error("Error decoding data", "error", err)
 
 		return ""
 	}
 
-	log.Debug("Got gender", "gender", gender.Gender)
+	e.logger.Debug("Got gender", "gender", gender.Gender)
 
 	return gender.Gender
 }

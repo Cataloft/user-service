@@ -10,6 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const numAPIs = 3
+
 type Request struct {
 	Name       string `binding:"required" json:"name"`
 	Surname    string `binding:"required" json:"surname"`
@@ -38,24 +40,26 @@ func EnrichFIO(saver SaverUser, log *slog.Logger) gin.HandlerFunc {
 			Patronymic: req.Patronymic,
 		}
 
+		enricher := apis.New(log)
+
 		wg := sync.WaitGroup{}
-		wg.Add(3)
+		wg.Add(numAPIs)
 
-		go func(c *gin.Context, log *slog.Logger) {
+		go func() {
 			defer wg.Done()
 
-			user.Age = apis.EnrichAge(c, user.Name, log)
-		}(c, log)
-		go func(c *gin.Context, log *slog.Logger) {
+			user.Age = enricher.EnrichAge(c, user.Name)
+		}()
+		go func() {
 			defer wg.Done()
 
-			user.Gender = apis.EnrichGender(c, user.Name, log)
-		}(c, log)
-		go func(c *gin.Context, log *slog.Logger) {
+			user.Gender = enricher.EnrichGender(c, user.Name)
+		}()
+		go func() {
 			defer wg.Done()
 
-			user.Nationality = apis.EnrichNationality(c, user.Name, log)
-		}(c, log)
+			user.Nationality = enricher.EnrichNationality(c, user.Name)
+		}()
 		wg.Wait()
 
 		log.Debug("User data enriched", "enriched user", user)

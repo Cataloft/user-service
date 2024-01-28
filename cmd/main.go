@@ -18,7 +18,7 @@ func main() {
 	cfg := config.MustLoad()
 	log := setupLogger(cfg.Env)
 
-	db := storage.New(cfg.DatabaseURL)
+	db := storage.New(cfg.Database, log)
 	srv := server.New(db, cfg, log)
 
 	err := srv.Start()

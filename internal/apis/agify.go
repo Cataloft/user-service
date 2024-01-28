@@ -2,16 +2,17 @@ package apis
 
 import (
 	"encoding/json"
-	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func EnrichAge(c *gin.Context, name string, log *slog.Logger) int {
-	type AgeResp struct {
-		Age int `json:"age"`
-	}
+type AgeResp struct {
+	Age int `json:"age"`
+}
+
+func (e *Enricher) EnrichAge(c *gin.Context, name string) int {
+	var age AgeResp
 
 	apiURL := "https://api.agify.io/?name="
 	url := apiURL + name
@@ -20,7 +21,7 @@ func EnrichAge(c *gin.Context, name string, log *slog.Logger) int {
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "Error executing request", "error": err})
-		log.Error("Error executing request", "error", err)
+		e.logger.Error("Error executing request", "error", err)
 
 		return -1
 	}
@@ -28,22 +29,21 @@ func EnrichAge(c *gin.Context, name string, log *slog.Logger) int {
 
 	if resp.StatusCode != http.StatusOK {
 		c.JSON(resp.StatusCode, gin.H{"message": "Error getting data", "error": err})
-		log.Error("Error getting data", "error", err)
+		e.logger.Error("Error getting data", "error", err)
 
 		return -1
 	}
 
-	var age AgeResp
 	err = json.NewDecoder(resp.Body).Decode(&age)
 
 	if err != nil {
 		c.JSON(resp.StatusCode, gin.H{"message": "Error decoding data", "error": err})
-		log.Error("Error decoding data", "error", err)
+		e.logger.Error("Error decoding data", "error", err)
 
 		return -1
 	}
 
-	log.Debug("Got age", "age", age.Age)
+	e.logger.Debug("Got age", "age", age.Age)
 
 	return age.Age
 }

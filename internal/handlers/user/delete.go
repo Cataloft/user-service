@@ -9,7 +9,7 @@ import (
 )
 
 type DeleterUser interface {
-	DeleteUser(id int) error
+	DeleteUser(id int) (string, error)
 }
 
 func Delete(deleter DeleterUser, log *slog.Logger) gin.HandlerFunc {
@@ -24,10 +24,17 @@ func Delete(deleter DeleterUser, log *slog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		err = deleter.DeleteUser(id)
+		exist, err := deleter.DeleteUser(id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error deleting user", "error": err})
 			log.Error("Error deleting user", "error", err)
+
+			return
+		}
+
+		if exist != "" {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "User is not exist", "id": id})
+			log.Info("User is not exist", "id", id)
 
 			return
 		}

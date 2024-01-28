@@ -10,34 +10,24 @@ import (
 )
 
 type GetterUser interface {
-	GetUsers(filters []string, log *slog.Logger) (*[]model.User, error)
+	GetUsers(filters []string) ([]model.User, error)
 }
 
 func GetList(userGetter GetterUser, log *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		filterParams := map[string]string{
-			"ageGreater":  "greater",
-			"ageLower":    "lower",
-			"nameContain": "like",
-			"age":         "equal",
-			"name":        "equal",
-			"surname":     "equal",
-			"patronymic":  "equal",
-			"gender":      "equal",
-			"nationality": "equal",
-		}
+		params := []string{"ageGreater", "ageLower", "nameContain", "age", "name", "surname", "patronymic", "gender", "nationality"}
 
 		var filters []string
 
-		for param, op := range filterParams {
-			if paramFilter := c.Query(param); paramFilter != "" {
-				filters = append(filters, utils.OperateStrings(param, paramFilter, op))
+		for _, param := range params {
+			if paramVal := c.Query(param); paramVal != "" {
+				filters = append(filters, utils.OperateStrings(param, paramVal))
 			}
 		}
 
 		log.Debug("Getting filters", "filters", filters)
 
-		filteredUsers, err := userGetter.GetUsers(filters, log)
+		filteredUsers, err := userGetter.GetUsers(filters)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "Error getting data from server", "error": err})
@@ -46,8 +36,7 @@ func GetList(userGetter GetterUser, log *slog.Logger) gin.HandlerFunc {
 			return
 		}
 
-		items := *filteredUsers
-		log.Debug("Filtered data", "items", items)
+		log.Debug("Filtered data", "items", filteredUsers)
 
 		page, ok := c.MustGet("page").(int)
 		if !ok {
@@ -62,11 +51,17 @@ func GetList(userGetter GetterUser, log *slog.Logger) gin.HandlerFunc {
 		startIndex := (page - 1) * pageSize
 		endIndex := startIndex + pageSize
 
-		if endIndex > len(items) {
-			endIndex = len(items)
+		if endIndex > len(filteredUsers) {
+			endIndex = len(filteredUsers)
 		}
 
-		paginatedItems := items[startIndex:endIndex]
+		if startIndex > endIndex {
+			c.JSON(http.StatusOK, gin.H{"message": "This page doesn't exist"})
+
+			return
+		}
+
+		paginatedItems := filteredUsers[startIndex:endIndex]
 		log.Debug("Paginated data", "items", paginatedItems)
 
 		c.JSON(http.StatusOK, gin.H{"page": page, "pageSize": pageSize, "filteredUsers": paginatedItems})

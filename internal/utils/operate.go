@@ -4,12 +4,11 @@ import (
 	"strings"
 )
 
-func OperateStrings(field, fieldVal, op string) string {
+func OperateStrings(field, fieldVal string) string {
 	filterOps := map[string]string{
-		"greater": ">",
-		"lower":   "<",
-		"equal":   "=",
-		"like":    "LIKE",
+		"ageGreater":  ">",
+		"ageLower":    "<",
+		"nameContain": "LIKE",
 	}
 
 	fieldAliases := map[string]string{
@@ -18,13 +17,12 @@ func OperateStrings(field, fieldVal, op string) string {
 		"nameContain": "name",
 	}
 
-	switch op {
-	case "greater", "lower":
-		return fieldAliases[field] + filterOps[op] + fieldVal
-	case "like":
-		return strings.Join(
-			[]string{fieldAliases[field], filterOps[op], "'%" + fieldVal + "%'", ""}, " ")
+	switch field {
+	case "ageGreater", "ageLower":
+		return fieldAliases[field] + filterOps[field] + fieldVal
+	case "nameContain":
+		return strings.Join([]string{fieldAliases[field], filterOps[field], "'%" + fieldVal + "%'", ""}, " ")
 	default:
-		return field + filterOps[op] + "'" + fieldVal + "'"
+		return field + "=" + "'" + fieldVal + "'"
 	}
 }
